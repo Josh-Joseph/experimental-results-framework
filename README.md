@@ -1,2 +1,2 @@
-experimental_results_framework
+experimental-results-framework
 ==============================
