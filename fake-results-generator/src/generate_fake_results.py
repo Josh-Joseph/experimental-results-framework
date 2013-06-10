@@ -5,6 +5,8 @@ import datetime
 import random
 import couchdb
 import numpy
+sys.path.append( "../../experimental-results-python-library/src/")
+import experimental_results_python_library as EXL
 
 
 
@@ -12,13 +14,32 @@ def generate_fake_results( couch_db, trial_id="0" ):
     
     n_samples = random.randint( 10, 1000 )
     data = [ random.random() * 100 for x in xrange(n_samples) ]
-    results = { "trial-id" : trial_id,
-                "mean" : numpy.mean(data),
-                "variance" : numpy.var(data),
-                "num-samples" : n_samples,
-                "data-samples" : data,
-                }
-    couch_db.save( results )
+    results = { "trial" :
+                    { "trial_id" : trial_id,
+                      "agent" :
+                          { "generator" :
+                                { "name" : "fake",
+                                  "p_args" : [],
+                                  "kw_args" : {} } },
+                      "result" :
+                          { "mean" : numpy.mean(data),
+                            "variance" : numpy.var(data),
+                            "num_samples" : n_samples,
+                            "data_samples" : data },
+                      "parameters" :
+                          { "num_evaluation_episodes" : random.randint( 1, 50 ) },
+                      "domain" :
+                          { "generator" :
+                                { "name" : "fake_domain",
+                                  "p_args" : [],
+                                  "kw_args" : {} },
+                            "parameters" : {} },
+                      "code" :
+                          { "version" :
+                                EXL.code_version.get_code_version() },
+                      "stored_on" : None,
+                      "log_filename" : None } }
+    couch_db.save( EXL.podify(results) )
 
 
 if __name__ == "__main__":
