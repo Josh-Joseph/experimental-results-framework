@@ -7,7 +7,7 @@ Required Packages:
 Jetty 9 from http://download.eclipse.org/jetty/stable-9/dist/
 openjdk-7 (apt-get install openjdk-7-jdk openjdk-7-jre )
 dojo 1.9.0:  http://download.dojotoolkit.org/release-1.9.0/dojo-release-1.9.0-src.tar.gz
-
+pip install couchdb
 
 
 Webapps and Jetty
