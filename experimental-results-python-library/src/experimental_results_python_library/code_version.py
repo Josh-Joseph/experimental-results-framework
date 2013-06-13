@@ -8,7 +8,7 @@ import os.path
 
 #----------------------------------------------------------------------------
 
-def get_code_version( repo_filename = None ):
+def get_code_version( repo_filename = None, return_empty_keys=False ):
     """Return the code repository version of the GIT repository at the given
        lcoation. If no location is given, the current working directory is
        used instead.
@@ -18,8 +18,12 @@ def get_code_version( repo_filename = None ):
          { "repo_url" : "<url>",
            "branch" : "<branch>",
            "head" : "<commit-hashtag>",
+           "head_date" : "<timestamp>",
            "diffs: [<all diffs from head>],
            "untracked_files" : [<all files untracked>]}
+           
+       If any field is empty ([]), then the return dictionary will not
+       have the keys unless return_empty_keys=True is given as argument.
        """
     
     if repo_filename is None:
@@ -55,13 +59,21 @@ def get_code_version( repo_filename = None ):
                                       "contents" : f.read(),
                                       "modified_time" : os.path.getmtime( path ) } )
     
-    
-    return {
+    # create the resulting dictionary
+    res = {
         "repo_url" : repo.remotes.origin.url,
         "branch" : repo.active_branch.path,
         "head" : repo.head.reference.commit.hexsha,
+        "head_date" : repo.head.reference.commit.committed_date,
         "diffs" : all_diffs,
         "untracked_files" : untracked_files }
+    if return_empty_keys == False:
+        if len(untracked_files) == 0:
+            del res["untracked_files"]
+        if len(working_diffs) == 0:
+            del res["diffs"]
+    
+    return res
 
 #----------------------------------------------------------------------------
 
