@@ -4,6 +4,7 @@ from cluster_id import *
 import os
 import os.path
 import uuid
+import datetime
 
 
 #-----------------------------------------------------------------------------
@@ -126,18 +127,15 @@ def process_single_change( couch_db, couchdb_json_change, last_seq_filename ):
     
     # check if this is a completely new document using it's revision prefix
     rev_number = revision_number_from_revision( couchdb_json_change["changes"][0]["rev"] )
-    if rev_number == 1 or structure_get( "job.status", job_doc ) == "new":
+    if structure_get( "job.status", job_doc ) == "request:new":
         
         # we are a new job, so treat it as such
         process_new_job( couch_db, job_doc )
     else:
         
-        # we are a job that has changed, grab the previous version
-        # and process the changes
-        previous_job_doc = fetch_previous_revision( couch_db, job_doc )
-        process_job_change( couch_db,
-                            current_job_doc = job_doc,
-                            previous_job_doc = previous_job_doc )
+        # we are a job that has changed,
+        # process the changes
+        process_job_change( couch_db, job_doc )
 
     # overwrite file with last change procesed
     with open( last_seq_filename, 'w' ) as f:
@@ -154,7 +152,7 @@ def process_new_job( couch_db, job_doc ):
     
     
     # make sure we have a new job here
-    if not structure_has( "job.status", job_doc ) or not structure_get( "job.status", job_doc ) == "new":
+    if not structure_has( "job.status", job_doc ) or not structure_get( "job.status", job_doc ) == "request:new":
         raise Exception( "Unable to process new job, job document malformed or of unknown type: " + str(job_doc) )
     
     
@@ -164,7 +162,8 @@ def process_new_job( couch_db, job_doc ):
         return
     
     # create a unique folder for this job
-    unique_job_folder = os.path.abspath( os.path.join( ".", "job-local", str(uuid.uuid1()) ) )
+    uid = uuid.uuid1()
+    unique_job_folder = os.path.abspath( os.path.join( ".", "job-local", str(uid) ) )
     os.makedirs( unique_job_folder )
     
     # get any dependencies and ensure they are all within this cluster
@@ -188,6 +187,7 @@ def process_new_job( couch_db, job_doc ):
     
     # update the job document to say that it has been submited
     # with a given local folder and SGE job id
+    structure_put( "job.job_id", "%s_%s_%s" % ( get_self_cluster_id(), str(sge_jid), str(uid) ), job_doc )
     structure_put( "job.sge_id", sge_jid, job_doc )
     structure_put( "job.local_directory", unique_job_folder, job_doc )
     structure_put( "job.status" , "submitted", job_doc )
@@ -198,29 +198,51 @@ def process_new_job( couch_db, job_doc ):
 
 #-----------------------------------------------------------------------------
 
-def process_job_change( couch_db, 
-                        current_job_doc = None,
-                        previous_job_doc = None ):
+def process_job_change( couch_db, job_doc):
     """Process a change in a job document. This takes care of anything not 
        a new job.  For example, this handles stopping, pausing, and resuming 
        jobs if they are running within this clsuter."""
     
     # ignore submitted status jobs, nothing to do
-    if structure_get( "job.status", current_job_doc ) == "submitted":
+    if structure_get( "job.status", job_doc ) == "submitted":
         return
     
     
-    status = structure_get( "job.status", current_job_doc )
+    status = structure_get( "job.status", job_doc )
     
     # nothing to do if it is not a rewuest for stop, pause, or resume
     if not ( status == "request:stop" or status == "request:pause" or status == "request:resume" ):
         return
 
-    # TODO: implement stop-request, pause-request, and resume-request
-    raise Exception( "Not Implemented: processing of job change: " + str(current_job_doc) )
+    # ignore jobs for different clusters
+    if not structure_get( "job.cluster_id", job_doc ) == get_self_cluster_id():
+        return
+
+    # stop a job
+    if status == "request:stop":
+        process_stop_request( couch_db,
+                              job_doc )
+    else:
+        
+        # TODO: implement pause-request, and resume-request
+        raise Exception( "Not Implemented: processing of job change: " + str(job_doc) )
 
 
 #-----------------------------------------------------------------------------
+
+def process_stop_request( couch_db, job_doc ):
+    """Stops the given job and removesd it from the SGE master queye.
+       This will update the status to stopped."""
+
+    # get the sge job id and stop it
+    sge_id = structure_get( "job.sge_id", job_doc )
+    sge_manager.stop_job( sge_id )
+    
+    # update the status to stopped
+    structure_put( "job.status", "stopped", job_doc )
+    structure_put( "job.stop_date", str(datetime.datetime.now()), job_doc )
+    couch_db.save( job_doc )
+    
 
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
