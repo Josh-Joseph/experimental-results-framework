@@ -21,3 +21,6 @@ inside of webapps and copy in all of the dojo sources as well as make
 a subfolder for our own UI sources and we are set. The webapp/<folder>
 will be at url localhost:8080/<folder>.
 
+License:
+-------
+This module is distrubted under the MIT license.
