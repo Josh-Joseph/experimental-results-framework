@@ -1,4 +1,4 @@
-import logging_with_processing_info as log
+import logging_with_timing_and_progress as log
 import argparse
 from json_utils import parse_json_dict
 from log_result import log_result as push_result_into_couchdb
@@ -32,10 +32,10 @@ kwargs['computation_parameters'] = parse_json_dict(kwargs['computation_parameter
 kwargs['computation_inputs'] = parse_json_dict(kwargs['computation_inputs'])
 
 # build computation
-computation = eval(kwargs['computation'])(kwargs['unique_process_id'], kwargs['computation_parameters'])
+computation = eval(kwargs['computation'])(kwargs['unique_process_id'], **kwargs['computation_parameters'])
 
 # run the computation
-result = computation.run(kwargs['computation_inputs'])
+result = computation.run(**kwargs['computation_inputs'])
 
 # log the result into couchdb
 push_result_into_couchdb(result)

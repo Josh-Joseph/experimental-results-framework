@@ -7,22 +7,15 @@ class Computation(object):
     def run(self, **kwargs):
         """Runs the computation
 
-        This run function can be used
+        This method is mainly used for testing and directly returns the value of 'results', if given.
 
         Parameters
         ----------
-        X : object
-            The input.
-
-        y : object, optional (default=None)
-            The output.
+        **kwargs : arbitrary keyword arguments
 
         Returns
         -------
-        result : object
-            Returns y if y is not None, otherwise it returns X.
+        results : object
+            If 'results' was given, its value is returned. If not, None is returned.
         """
-        if y is None:
-            return X
-        else:
-            return y
+        return kwargs.get('results')
