@@ -1,26 +1,21 @@
 import logging_with_processing_info as log
 import argparse
-from json_utils import try_to_parse_dict_values_json
-from estimators import *
-from cross_validation_iterators import *
+from json_utils import parse_json_dict
+from log_result import log_result as push_result_into_couchdb
+from computations import *
+
 
 ###################################
 # define the command-line arguments
 parser = argparse.ArgumentParser(description= "A job which runs an estimator.")
 
-# estimator arguments
-parser.add_argument("-e", "--estimator", required=True)
-parser.add_argument("-epars", "--estimator-parameters")
-parser.add_argument("-X", "--input-X")
-parser.add_argument("-y", "--output-y")
+# computation arguments
+parser.add_argument("-c", "--computation", required=True)
+parser.add_argument("-cpars", "--computation-parameters")
+parser.add_argument("-cin", "--computation-inputs")
 
-# cross validation iterator arguments
-parser.add_argument("-cvi", "--cross-validation-iterator", default='CrossValidationIterator')
-parser.add_argument("-cvipars", "--cross-validation-iterator-parameters")
-
-# process control parameters
-parser.add_argument("-puid", "--process-unique-id")
-parser.add_argument("-jpars", "--job-parameters")
+# unique process id which is passed to the computation for logging
+parser.add_argument("-upid", "--unique-process-id")
 
 # parse the given arguments
 args = parser.parse_args()
@@ -32,16 +27,15 @@ log.basicConfig(format='[%(levelname)s %(asctime)s] %(message)s', datefmt='%Y-%m
 # convert the arguments to a dictionary
 kwargs = args.__dict__
 
-# attempt to parse the dictionary values using json
-kwargs = try_to_parse_dict_values_json(kwargs)
+# parse the json strings of computation-parameters and computation-inputs into dictionaries
+kwargs['computation_parameters'] = parse_json_dict(kwargs['computation_parameters'])
+kwargs['computation_inputs'] = parse_json_dict(kwargs['computation_inputs'])
 
-# build iterator
-cv_iterator = eval(kwargs['cross_validation_iterator'])(kwargs['cross_validation_iterator_parameters'])
+# build computation
+computation = eval(kwargs['computation'])(kwargs['unique_process_id'], kwargs['computation_parameters'])
 
-# build estimator
-estimator = eval(kwargs['estimator'])(kwargs['estimator_parameters'], cv=cv_iterator)
-
-# run job
-result = estimator.score(kwargs['input_X'], kwargs['output_y'])
+# run the computation
+result = computation.run(kwargs['computation_inputs'])
 
 # log the result into couchdb
+push_result_into_couchdb(result)

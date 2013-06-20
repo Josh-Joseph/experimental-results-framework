@@ -1,13 +1,13 @@
-class Estimator(object):
-    """Base class used for all estimators (with a signature similar to scikit-learn's estimators)."""
+class Computation(object):
+    """Base class used for all computations."""
 
-    def __init__(self, cv=None):
-        self.cv = cv
+    def __init__(self, puid=None):
+        self.puid = puid
 
-    def score(self, X, y=None):
-        """Computes the prediction of the estimator
+    def run(self, **kwargs):
+        """Runs the computation
 
-        This score function can be used as a passthrough of X or y.
+        This run function can be used
 
         Parameters
         ----------

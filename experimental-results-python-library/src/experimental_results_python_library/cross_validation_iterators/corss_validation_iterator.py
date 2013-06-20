@@ -1,3 +1,0 @@
-class CrossValidationIterator(object):
-
-    pass

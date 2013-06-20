@@ -151,6 +151,30 @@ def from_json( json_str ):
 
 #----------------------------------------------------------------------------
 
+def parse_json_dict(dict_as_json_str):
+    """Attempt to parse a json string representation of a dictionary and gracefully handle 'None's.
+
+    This function will raise a ValueError if the json string cannot be parsed into a dict.
+
+    Parameters
+    ----------
+    dict_as_json_str : string or None
+        A json string representation of a dictionary.
+
+    Returns
+    -------
+    parsed_dict : dict or None
+        Returns a new dictionary with all elements parsed as json if possible or None if dict_as_json_str.
+    """
+    if dict_as_json_str is None:
+        return None
+    parsed_dict = json.loads(dict_as_json_str)
+    if type(parsed_dict) is not dict:
+        raise ValueError('The string ' + dict_as_json_str + ' was not parsed into a dictionary.')
+    return parsed_dict
+
+#----------------------------------------------------------------------------
+
 def try_to_parse_dict_values_json(raw_dict):
     """Attempt to parse each element of the dictionary using json.loads
 
