@@ -44,6 +44,22 @@ def submit_task( target=None,
     
 
 #-----------------------------------------------------------------------------
+
+def stop_job( sge_id ):
+    """Stops the job with the given SGE id that is running or queued.
+       This does not return anything useful."""
+    
+    print "Attempting to stop sge job: " + str(sge_id)
+    qdel_output = None
+    try:
+        subprocess.check_output( ['qdel', str(sge_id) ] )
+    except subprocess.CalledProcessError:
+        pass
+    if qdel_output is not None:
+        print qdel_output
+    return qdel_output
+       
+
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
