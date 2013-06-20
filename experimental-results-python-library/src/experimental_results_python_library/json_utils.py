@@ -131,8 +131,6 @@ def podify( obj, use_transforms=True ):
         return str( obj.__name__ )
     return str(obj)
 
-    
-
 #----------------------------------------------------------------------------
 
 def to_json( obj ):
@@ -151,3 +149,26 @@ def from_json( json_str ):
 
     return json.loads( json_str )
 
+#----------------------------------------------------------------------------
+
+def try_to_parse_dict_values_json(raw_dict):
+    """Attempt to parse each element of the dictionary using json.loads
+
+    Parameters
+    ----------
+    raw_dict : dict
+        The dictionary to be parsed.
+
+    Returns
+    -------
+    parsed_dict : dict
+        Returns a new dictionary with all elements parsed as json if possible.
+    """
+    parsed_dict = dict()
+    for key, value in raw_dict:
+        try:
+            parsed_value = json.loads(value)
+        except (ValueError, TypeError):
+            parsed_value = value
+        parsed_dict[key] = parsed_value
+    return parsed_dict
