@@ -1,8 +1,8 @@
 class Computation(object):
     """Base class used for all computations."""
 
-    def __init__(self, puid=None):
-        self.puid = puid
+    def __init__(self, upid=None):
+        self.puid = upid
 
     def run(self, **kwargs):
         """Runs the computation

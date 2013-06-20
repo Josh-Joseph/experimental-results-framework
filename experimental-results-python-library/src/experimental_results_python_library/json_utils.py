@@ -163,11 +163,12 @@ def parse_json_dict(dict_as_json_str):
 
     Returns
     -------
-    parsed_dict : dict or None
-        Returns a new dictionary with all elements parsed as json if possible or None if dict_as_json_str.
+    parsed_dict : dict
+        Returns a new dictionary with all elements parsed as json if possible or an empty dictionary if
+        dict_as_json_str is None.
     """
     if dict_as_json_str is None:
-        return None
+        return {}
     parsed_dict = json.loads(dict_as_json_str)
     if type(parsed_dict) is not dict:
         raise ValueError('The string ' + dict_as_json_str + ' was not parsed into a dictionary.')
