@@ -7,7 +7,9 @@ import re
 def submit_task( target=None,
                  depends_on=None,
                  priority=-1023,
-                 cwd="."):
+                 cwd=".",
+                 stdout_filename="out",
+                 stderr_filename="err"):
     """Submit a task top the system to be executed.
        This call will queue the task and return with a task_id to be
        used to query and modify the task when needed.
@@ -21,6 +23,12 @@ def submit_task( target=None,
        priority -- a number btween -1023 and 1023,  Higher number is higher
                    priority.  In general, do not use non-negative numbers for
                    priority since system tasks use those.
+       cwd -- a path to use as the working directory when the script it called.
+       stdout_filename -- a filename to use as the output stream file for
+                          the script. This will usually be relative under the
+                          current working directory (defaults to out)
+       stderr_filename -- a filename to use as the error stream file for the
+                          script. (defaults to err)
                    
        Returns: a task_id for the submitted task.
        """
@@ -33,9 +41,9 @@ def submit_task( target=None,
 
     qsub_output = ""
     if depends_on is not None:
-        qsub_output = subprocess.check_output( ['qsub', '-p', str(priority), '-V', '-wd', cwd, '-hold_jid', str(depends_on), target ] );
+        qsub_output = subprocess.check_output( ['qsub', '-p', str(priority), '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename, '-hold_jid', str(depends_on), target ] );
     else:
-        qsub_output = subprocess.check_output( ['qsub', '-p', priority, '-V', '-wd', cwd, target ] );
+        qsub_output = subprocess.check_output( ['qsub', '-p', priority, '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename, target ] );
     
     # parse the result of qsub to get the jobid 
     # and use that as the task id to return
