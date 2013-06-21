@@ -131,8 +131,6 @@ def podify( obj, use_transforms=True ):
         return str( obj.__name__ )
     return str(obj)
 
-    
-
 #----------------------------------------------------------------------------
 
 def to_json( obj ):
@@ -151,3 +149,51 @@ def from_json( json_str ):
 
     return json.loads( json_str )
 
+#----------------------------------------------------------------------------
+
+def parse_json_dict(dict_as_json_str):
+    """Attempt to parse a json string representation of a dictionary and gracefully handle 'None's.
+
+    This function will raise a ValueError if the json string cannot be parsed into a dict.
+
+    Parameters
+    ----------
+    dict_as_json_str : string or None
+        A json string representation of a dictionary.
+
+    Returns
+    -------
+    parsed_dict : dict
+        Returns a new dictionary with all elements parsed as json if possible or an empty dictionary if
+        dict_as_json_str is None.
+    """
+    if dict_as_json_str is None:
+        return {}
+    parsed_dict = json.loads(dict_as_json_str)
+    if type(parsed_dict) is not dict:
+        raise ValueError('The string ' + dict_as_json_str + ' was not parsed into a dictionary.')
+    return parsed_dict
+
+#----------------------------------------------------------------------------
+
+def try_to_parse_dict_values_json(raw_dict):
+    """Attempt to parse each element of the dictionary using json.loads
+
+    Parameters
+    ----------
+    raw_dict : dict
+        The dictionary to be parsed.
+
+    Returns
+    -------
+    parsed_dict : dict
+        Returns a new dictionary with all elements parsed as json if possible.
+    """
+    parsed_dict = dict()
+    for key, value in raw_dict:
+        try:
+            parsed_value = json.loads(value)
+        except (ValueError, TypeError):
+            parsed_value = value
+        parsed_dict[key] = parsed_value
+    return parsed_dict
