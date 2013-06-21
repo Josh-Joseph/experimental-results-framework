@@ -10,7 +10,7 @@ class FakeResultsGenerator(Computation):
     def run(self, trial_id=None):
         n_samples = np.random.randint(10, 1000)
         data = [np.random.random() * 100 for x in xrange(n_samples)]
-        results = {"trial":
+        results = {"computation":
                        {"trial_id": trial_id,
                         "agent": {"generator": {"name": "fake", "p_args": [], "kw_args": {}}},
                         "result": {"mean": np.mean(data),
@@ -20,7 +20,5 @@ class FakeResultsGenerator(Computation):
                         "parameters": {"num_evaluation_episodes": np.random.randint(1, 50)},
                         "domain": {"generator": {"name": "fake_domain", "p_args": [], "kw_args": {}},
                                    "parameters": {}},
-                        "code": {"version": get_code_version()},
-                        "stored_on": None,
                         "log_filename": None}}
         return results
