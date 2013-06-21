@@ -26,7 +26,7 @@ View results locally:
 --------------------
 
 * Start a local couchdb (build-couchdb/build/bin/couchdb)
-* View the results at the URL http://localhost:5984/_utils/database.html?local_results
+* View the results at http://localhost:5984/_utils/database.html?local_results
 
 Running jobs on an SGE cluster:
 ----------------------
