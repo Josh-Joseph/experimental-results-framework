@@ -9,7 +9,8 @@ Required Packages:
 * Jetty 9 from http://download.eclipse.org/jetty/stable-9/dist/
 * openjdk-7 (apt-get install openjdk-7-jdk openjdk-7-jre )
 * dojo 1.9.0:  http://download.dojotoolkit.org/release-1.9.0/dojo-release-1.9.0-src.tar.gz
-* pip install couchdb
+* pip install couchdb uptime drmaa
+* apt-get install libdrmaa-dev
 
 Webapps and Jetty:
 -----------------
@@ -20,6 +21,21 @@ it runs for hot-plug contents.  So we just needc to create a folder
 inside of webapps and copy in all of the dojo sources as well as make
 a subfolder for our own UI sources and we are set. The webapp/<folder>
 will be at url localhost:8080/<folder>.
+
+View results locally:
+--------------------
+
+* Start a local couchdb (build-couchdb/build/bin/couchdb)
+* View the results at the URL http://localhost:5984/_utils/database.html?local_results
+
+Running jobs on an SGE cluster:
+----------------------
+
+On the cluster:
+* Start a couchdb (build-couchdb/build/bin/couchdb)
+* Start the jobs server (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-server.py)
+* Start the jobs tracker (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-tracker.py)
+
 
 License:
 -------
