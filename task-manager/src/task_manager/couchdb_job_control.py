@@ -106,13 +106,14 @@ def process_new_job( couch_db, job_doc ):
     
     # update the job document to say that it has been submited
     # with a given local folder and SGE job id
-    structure_put( "job.job_id", "%s_%s_%s" % ( get_self_cluster_id(), str(sge_jid), str(uid) ), job_doc )
-    structure_put( "job.sge_id", sge_jid, job_doc )
-    structure_put( "job.local_directory", unique_job_folder, job_doc )
-    structure_put( "job.status" , "submitted", job_doc )
-
-    # update the couchdb document
-    couch_db.save( job_doc )
+    job_id = "%s_%s_%s" % ( get_self_cluster_id(), str(sge_jid), str(uid) )
+    update_couchdb_document( couch_db,
+                             job_doc,
+                             [ ( "job.job_id", job_id),
+                               ( "job.sge_id", sge_jid ),
+                               ( "job.local_directory", unique_job_folder ),
+                               ( "job.status" , "submitted" ) ],
+                             max_retries = 10 )
     
 
 #-----------------------------------------------------------------------------
@@ -158,9 +159,11 @@ def process_stop_request( couch_db, job_doc ):
     sge_manager.stop_job( sge_id )
     
     # update the status to stopped
-    structure_put( "job.status", "stopped", job_doc )
-    structure_put( "job.stop_date", str(datetime.datetime.now()), job_doc )
-    couch_db.save( job_doc )
+    update_couchdb_document( couch_db,
+                             job_doc,
+                             [( "job.status", "stopped" ),
+                              ( "job.stop_date", str(datetime.datetime.now()))],
+                             max_retries = 10)
     
 
 #-----------------------------------------------------------------------------
