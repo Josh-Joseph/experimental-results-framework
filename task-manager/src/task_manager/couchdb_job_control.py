@@ -5,94 +5,13 @@ import os
 import os.path
 import uuid
 import datetime
+import sys
+sys.path.append( "../../../experimental-results-python-library/src/")
+import experimental_results_python_library as EXL
+from experimental_results_python_library.couchdb_utils import *
+from experimental_results_python_library.json_utils import *
 
 
-#-----------------------------------------------------------------------------
-
-def structured_key_to_list( skey, separator="." ):
-    """Returns a list representation of the strucutred key.
-       This splits "a.b.c" into [ "a", "b", "c" ].
-       The optional separator to use to define sturctured keys (default .)"""
-    
-    return skey.split( separator )
-
-#-----------------------------------------------------------------------------
-
-def structure_has( skey, d, separator="."  ):
-    """Returns true iff the given structure key is inside the dictionary.
-       Each element of the structure is treated as a subdictionary.
-       Optionaly, give the spearator to use for structured keys."""
-
-    klist = structured_key_to_list( skey, separator )
-    subd = d
-    for k in klist:
-        if not k in subd:
-            return False
-        subd = subd[k]
-    return True
-
-#-----------------------------------------------------------------------------
-
-def structure_get( skey, d, separator=".", default=None  ):
-    """Returns the element at the sturctured key in hte dictionary.
-       Each element of the structure is treated as a subdictionary.
-       Optionally, give the separator to use for structured keys."""
-
-    klist = structured_key_to_list( skey, separator )
-    subd = d
-    for k in klist:
-        if not k in subd:
-            return default
-        subd = subd[k]
-    return subd
-
-#-----------------------------------------------------------------------------
-
-def structure_put( skey, val, d, separator="." ):
-    """Puts a given value into a sturcutred key.
-       This creates subdictionaries as needed for the structured key."""
-    
-    klist = structured_key_to_list( skey, separator )
-    subd = d
-    for k in klist[:-1]:
-        if not k in subd:
-            subd[k] = {}
-        subd = subd[k]
-    subd[klist[-1]] = val
-    return d
-
-#-----------------------------------------------------------------------------
-
-
-def revision_number_from_revision( rev ):
-    """Extract the revision number as in int ( also know as the number 
-       of  document changes that have happened ) from a couchdb revision tag.
-       This is the number before the first hiupen (#-uuid)."""
-    
-    return int(rev[:rev.index('-')])
-
-#-----------------------------------------------------------------------------
-
-def fetch_previous_revision( couch_db, json_doc ):
-    """Returns the previous revision of hte given docomunet from the
-       couchdb databse given."""
-    
-    # fetch the current revision of hte document using id
-    revision_gen = couch_db.revisions( json_doc["_id"] )
-    
-    # find the revision *after* the given one
-    previous = None
-    found = False
-    for doc_rev in revision_gen:
-        if found:
-            previous = doc_rev
-            break
-        if doc_rev["_rev"] == json_doc["_rev"]:
-            found = True
-    
-    # return the previous revision (or None)
-    return previous
-    
 
 #-----------------------------------------------------------------------------
 

@@ -197,3 +197,59 @@ def try_to_parse_dict_values_json(raw_dict):
             parsed_value = value
         parsed_dict[key] = parsed_value
     return parsed_dict
+
+
+#-----------------------------------------------------------------------------
+
+def structured_key_to_list( skey, separator="." ):
+    """Returns a list representation of the strucutred key.
+       This splits "a.b.c" into [ "a", "b", "c" ].
+       The optional separator to use to define sturctured keys (default .)"""
+    
+    return skey.split( separator )
+
+#-----------------------------------------------------------------------------
+
+def structure_has( skey, d, separator="."  ):
+    """Returns true iff the given structure key is inside the dictionary.
+       Each element of the structure is treated as a subdictionary.
+       Optionaly, give the spearator to use for structured keys."""
+
+    klist = structured_key_to_list( skey, separator )
+    subd = d
+    for k in klist:
+        if not k in subd:
+            return False
+        subd = subd[k]
+    return True
+
+#-----------------------------------------------------------------------------
+
+def structure_get( skey, d, separator=".", default=None  ):
+    """Returns the element at the sturctured key in hte dictionary.
+       Each element of the structure is treated as a subdictionary.
+       Optionally, give the separator to use for structured keys."""
+
+    klist = structured_key_to_list( skey, separator )
+    subd = d
+    for k in klist:
+        if not k in subd:
+            return default
+        subd = subd[k]
+    return subd
+
+#-----------------------------------------------------------------------------
+
+def structure_put( skey, val, d, separator="." ):
+    """Puts a given value into a sturcutred key.
+       This creates subdictionaries as needed for the structured key."""
+    
+    klist = structured_key_to_list( skey, separator )
+    subd = d
+    for k in klist[:-1]:
+        if not k in subd:
+            subd[k] = {}
+        subd = subd[k]
+    subd[klist[-1]] = val
+    return d
+
