@@ -1,6 +1,5 @@
 from computation import Computation
 import numpy as np
-from code_version import get_code_version
 
 
 class FakeResultsGenerator(Computation):
