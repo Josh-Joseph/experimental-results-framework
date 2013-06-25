@@ -5,6 +5,10 @@ from couchdb_job_control import *
 import time
 import sys
 import drmaa
+sys.path.append( "../../../experimental-results-python-library/src/")
+import experimental_results_python_library as EXL
+from experimental_results_python_library.couchdb_utils import *
+from experimental_results_python_library.json_utils import *
 
 
 #-----------------------------------------------------------------------------
@@ -26,35 +30,37 @@ def update_job_status( couch_db, job_doc, drmaa_session,
     if not structure_get( "job.status", job_doc ) == "submitted":
         return    
 
-    # print debug
-    print "updating job status: " + str(structure_get( "job.sge_id", job_doc )) + " " + structure_get( "job.job_id", job_doc )
-    sys.stdout.flush()
-            
-    # keep trying to update it's status in event of conflicts
-    num_tries = 0
+    # get the status of the job
+    # get the sge_id and check it's status
+    sge_id = structure_get( "job.sge_id", job_doc )
     sge_status = None
-    while num_tries <  max_tries:
-        
-        # get the sge_id and check it's status
-        sge_id = structure_get( "job.sge_id", job_doc )
-        try:
-            sge_status = drmaa_session.jobStatus( str(sge_id) )
-        except drmaa.errors.InvalidJobException:
-            # invalid job means the job is finished or removed or otherwise
-            # not alive anymore, so change status to done
-            sge_status = "invalid job"
-            structure_put( "job.status", "done", job_doc )
-        structure_put( "job.sge_status", sge_status, job_doc )
-        try :
-            couch_db.save( job_doc )
-            break
-        except couchdb.ResourceConflit:
-            print "  * conflict updating job document %s (%s)" % ( str(sge_id), structure_get( "job.job_id", job_doc ) )
-            sys.stdout.flush()
-            
+    is_done = False
+    try:
+        sge_status = drmaa_session.jobStatus( str(sge_id) )
+    except drmaa.errors.InvalidJobException:
+        # invalid job means the job is finished or removed or otherwise
+        # not alive anymore, so change status to done
+        sge_status = "invalid job"
+        is_done = True
 
-        # wait some time before retry
-        time.sleep( sleep_time )
+    # only update the status if it has changed
+    if sge_status != structure_get( "job.sge_status", job_doc ):
+        
+        # ok, update ht job status
+        if is_done:
+            update_couchdb_document( couch_db, 
+                                     job_doc,
+                                     [ ("job.sge_status", sge_status),
+                                       ("job.status", "done" )] )
+        else:
+            update_couchdb_document( couch_db, 
+                                     job_doc,
+                                     [ ("job.sge_status", sge_status) ] )
+
+        # print debug
+        print "updating job status: " + str(structure_get( "job.sge_id", job_doc )) + " " + structure_get( "job.job_id", job_doc )
+        sys.stdout.flush()
+
         
     # return the status set
     return sge_status

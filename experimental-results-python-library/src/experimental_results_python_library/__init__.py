@@ -9,6 +9,7 @@ import socket
 try:
     import log_result
     from log_result import log_result
+    import couchdb_utils
 except socket.error, v:  # the connection was refused
     errorcode = v[0]
     if errorcode == 111:
