@@ -30,10 +30,6 @@ def update_job_status( couch_db, job_doc, drmaa_session,
     if not structure_get( "job.status", job_doc ) == "submitted":
         return    
 
-    # print debug
-    print "updating job status: " + str(structure_get( "job.sge_id", job_doc )) + " " + structure_get( "job.job_id", job_doc )
-    sys.stdout.flush()
-
     # get the status of the job
     # get the sge_id and check it's status
     sge_id = structure_get( "job.sge_id", job_doc )
@@ -60,7 +56,11 @@ def update_job_status( couch_db, job_doc, drmaa_session,
             update_couchdb_document( couch_db, 
                                      job_doc,
                                      [ ("job.sge_status", sge_status) ] )
-            
+
+        # print debug
+        print "updating job status: " + str(structure_get( "job.sge_id", job_doc )) + " " + structure_get( "job.job_id", job_doc )
+        sys.stdout.flush()
+
         
     # return the status set
     return sge_status
