@@ -57,6 +57,11 @@ Much of this was taken from [here](http://webappl.blogspot.com/2011/05/install-s
 * If qmon fails to start due to missing fonts (these may not all be needed)...
 
          sudo apt-get install xfs xfstt t1-xfree86-nonfree ttf-xfree86-nonfree ttf-xfree86-nonfree-syriac xfonts-75dpi xfonts-100dpi
+         
+http://webappl.blogspot.com/2011/05/install-sun-grid-engine-sge-on-ubuntu.html
+http://www.cbi.utsa.edu/sge_tutorial
+http://www.gridengine.info/2005/09/29/things-to-think-about-before-installing-grid-engine/
+http://manpages.ubuntu.com/manpages/lucid/man8/sge_qmaster.8.html
 
 License:
 -------
