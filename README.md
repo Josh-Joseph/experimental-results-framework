@@ -54,9 +54,11 @@ Much of this was taken from [here](http://webappl.blogspot.com/2011/05/install-s
         export SGE_ROOT=/usr/lib/gridengine
         export SGE_CELL=default
         
-* If qmon fails to start due to missing fonts (these may not all be needed)...
+* If qmon fails to start due to missing fonts (these may not all be needed) and reboot
 
          sudo apt-get install xfs xfstt t1-xfree86-nonfree ttf-xfree86-nonfree ttf-xfree86-nonfree-syriac xfonts-75dpi xfonts-100dpi
+         
+         
          
 http://webappl.blogspot.com/2011/05/install-sun-grid-engine-sge-on-ubuntu.html
 http://www.cbi.utsa.edu/sge_tutorial
