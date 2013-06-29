@@ -15,12 +15,10 @@ Required Packages:
 Webapps and Jetty:
 -----------------
 
-Jetty by default will take anything inside of the webapps folder and
-use it as a static ocntent page. This folder is scanned by jkett yas
-it runs for hot-plug contents.  So we just needc to create a folder
-inside of webapps and copy in all of the dojo sources as well as make
-a subfolder for our own UI sources and we are set. The webapp/<folder>
-will be at url localhost:8080/<folder>.
+Jetty, by default, will take anything inside of the webapps folder and use it as a static content page.
+This folder is scanned by jetty as it runs for hot-plug contents.
+So we just create a folder inside of webapps and copy in all of the dojo sources as well as make a subfolder for our own UI sources and we are set.
+The webapp/<folder>will be at url localhost:8080/<folder>.
 
 View results locally:
 --------------------
