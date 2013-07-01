@@ -39,11 +39,13 @@ def submit_task( target=None,
     # commands in the path and that you ahve setup your Queues how you 
     # want them and that the default Queues are all the matter :-)
 
+    target_and_args = target.split( " " )
+
     qsub_output = ""
     if depends_on is not None:
-        qsub_output = subprocess.check_output( ['qsub', '-p', str(priority), '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename, '-hold_jid', str(depends_on), target ] );
+        qsub_output = subprocess.check_output( ['qsub', '-p', str(priority), '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename, '-hold_jid', str(depends_on) ] + target_and_args );
     else:
-        qsub_output = subprocess.check_output( ['qsub', '-p', priority, '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename, target ] );
+        qsub_output = subprocess.check_output( ['qsub', '-p', priority, '-V', '-wd', cwd, '-o', stdout_filename, '-o', stderr_filename ] + target_and_args );
     
     # parse the result of qsub to get the jobid 
     # and use that as the task id to return
