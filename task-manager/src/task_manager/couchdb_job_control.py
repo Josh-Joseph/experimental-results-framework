@@ -46,7 +46,7 @@ def process_single_change( couch_db, couchdb_json_change, last_seq_filename ):
     
     # check if this is a completely new document using it's revision prefix
     rev_number = revision_number_from_revision( couchdb_json_change["changes"][0]["rev"] )
-    if structure_get( "computation.status", job_doc ) == "request:new":
+    if structure_get( "job.status", job_doc ) == "request:new":
         
         # we are a new job, so treat it as such
         process_new_job( couch_db, job_doc )
@@ -71,13 +71,13 @@ def process_new_job( couch_db, job_doc ):
     
     
     # make sure we have a new job here
-    if not structure_has( "computation.status", job_doc ) or not structure_get( "computation.status", job_doc ) == "request:new":
+    if not structure_has( "job.status", job_doc ) or not structure_get( "job.status", job_doc ) == "request:new":
         raise Exception( "Unable to process new job, job document malformed or of unknown type: " + str(job_doc) )
     
     
     # check if this is for us (for our clsuter)
     # return and do nothing otherwise
-    if not structure_get( "computation.cluster_id", job_doc ) == get_self_cluster_id():
+    if not structure_get( "job.cluster_id", job_doc ) == get_self_cluster_id():
         return
     
     # create a unique folder for this job
@@ -87,32 +87,32 @@ def process_new_job( couch_db, job_doc ):
     
     # get any dependencies and ensure they are all within this cluster
     dependencies = []
-    for dep in structure_get( "computation.depends_on", job_doc, default=[] ):
+    for dep in structure_get( "job.depends_on", job_doc, default=[] ):
         dep_job = couch_db.get( dep )
-        if not structure_get( "computation.cluster_id", dep_job ) == get_self_cluster_id():
+        if not structure_get( "job.cluster_id", dep_job ) == get_self_cluster_id():
             raise Exception( "Cannot handle jobs with dependencies across different clusters! found inconsistency inside: " + str(job_doc) + "  Dependency " + dep + " is: " + str(dep_job) )
         
         # fetch the actual sge job id from the job
-        dep_sge_id = structure_get( "computation.sge_id", dep_job)
+        dep_sge_id = structure_get( "job.sge_id", dep_job)
         if dep_sge_id is None:
             raise Exception( "Cannot have dependent job without an SGE job id! job: %s, Dependency %s:" %  ( str(job_doc), str(dep), str(dep_job) ) )
         dependencies.append( dep_sge_id )
 
     # Ok, submit the job using SGE
-    sge_jid = sge_manager.submit_task( target = structure_get( "computation.script", job_doc ),
+    sge_jid = sge_manager.submit_task( target = structure_get( "job.script", job_doc ),
                                        depends_on = dependencies,
                                        cwd = unique_job_folder,
-                                       priority = structure_get( "computation.priority", job_doc, default="-1023" ) )
+                                       priority = structure_get( "job.priority", job_doc, default="-1023" ) )
     
     # update the job document to say that it has been submited
     # with a given local folder and SGE job id
     job_id = "%s_%s_%s" % ( get_self_cluster_id(), str(sge_jid), str(uid) )
     update_couchdb_document( couch_db,
                              job_doc,
-                             [ ( "computation.computation_id", job_id),
-                               ( "computation.sge_id", sge_jid ),
-                               ( "computation.local_directory", unique_job_folder ),
-                               ( "computation.status" , "submitted" ) ],
+                             [ ( "job.job_id", job_id),
+                               ( "job.sge_id", sge_jid ),
+                               ( "job.local_directory", unique_job_folder ),
+                               ( "job.status" , "submitted" ) ],
                              max_retries = 10 )
     
 
@@ -124,18 +124,18 @@ def process_job_change( couch_db, job_doc):
        jobs if they are running within this clsuter."""
     
     # ignore submitted status jobs, nothing to do
-    if structure_get( "computation.status", job_doc ) == "submitted":
+    if structure_get( "job.status", job_doc ) == "submitted":
         return
     
     
-    status = structure_get( "computation.status", job_doc )
+    status = structure_get( "job.status", job_doc )
     
     # nothing to do if it is not a rewuest for stop, pause, or resume
     if not ( status == "request:stop" or status == "request:pause" or status == "request:resume" ):
         return
 
     # ignore jobs for different clusters
-    if not structure_get( "computation.cluster_id", job_doc ) == get_self_cluster_id():
+    if not structure_get( "job.cluster_id", job_doc ) == get_self_cluster_id():
         return
 
     # stop a job
@@ -155,14 +155,14 @@ def process_stop_request( couch_db, job_doc ):
        This will update the status to stopped."""
 
     # get the sge job id and stop it
-    sge_id = structure_get( "computation.sge_id", job_doc )
+    sge_id = structure_get( "job.sge_id", job_doc )
     sge_manager.stop_job( sge_id )
     
     # update the status to stopped
     update_couchdb_document( couch_db,
                              job_doc,
-                             [( "computation.status", "stopped" ),
-                              ( "computation.stop_date", str(datetime.datetime.now()))],
+                             [( "job.status", "stopped" ),
+                              ( "job.stop_date", str(datetime.datetime.now()))],
                              max_retries = 10)
     
 
