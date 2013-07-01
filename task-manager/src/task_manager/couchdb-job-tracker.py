@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument( "--check-interval", default=15.0, type=float,
                          help="The time to sleep between update checks, in seconds (default=15.0)")
     parser.add_argument( "--couchdb-base-url", default="http://localhost:5984/" )
-    parser.add_argument( "--couchdb-jobs-db", default="jobs" )
+    parser.add_argument( "--couchdb-jobs-db", default="computations" )
     parser.add_argument( "--conflict-max-retries", default=10, type=int,
                          help="The number of times to retyr an update on a databse conflict (default=10).")
     parser.add_argument( "--conflict-sleep-interval", default=0.1, type=float,

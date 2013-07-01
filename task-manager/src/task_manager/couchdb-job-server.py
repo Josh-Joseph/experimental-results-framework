@@ -10,7 +10,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser( description= "Listen for JOBS on the local (or given) couchdb jobs database" )
     parser.add_argument( "--couchdb-base-url", default="http://localhost:5984/" )
-    parser.add_argument( "--couchdb-jobs-db", default="jobs" )
+    parser.add_argument( "--couchdb-jobs-db", default="computations" )
     parser.add_argument( "--couchdb-clusters-db", default="clusters" )
     parser.add_argument( "--sequence-number", 
                          default="now",
