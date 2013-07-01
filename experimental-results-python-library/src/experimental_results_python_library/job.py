@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging_with_timing_and_progress as log
 import argparse
 from json_utils import parse_json_dict
