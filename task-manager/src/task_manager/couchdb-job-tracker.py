@@ -57,7 +57,7 @@ if __name__ == "__main__":
         #                         20,
         #                         wrapper=None,
         #                         key=EXL.to_json(view_query)):
-        for doc in db.iterview( "computation_tracker/all_computations_by_status",
+        for doc in db.iterview( "job_tracker/all_jobs_by_status",
                                 20,
                                 wrapper=None,
                                 key=urllib.quote_plus("submitted") ):
