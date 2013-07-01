@@ -23,16 +23,16 @@ def update_job_status( couch_db, job_doc, drmaa_session,
        conflicting process to finish."""
     
     # ignore non local cluster jobs
-    if not structure_get( "job.cluster_id", job_doc ) == get_self_cluster_id():
+    if not structure_get( "computation.cluster_id", job_doc ) == get_self_cluster_id():
         return
     
     # ignore anything that is not "submitted" status
-    if not structure_get( "job.status", job_doc ) == "submitted":
+    if not structure_get( "computation.status", job_doc ) == "submitted":
         return    
 
     # get the status of the job
     # get the sge_id and check it's status
-    sge_id = structure_get( "job.sge_id", job_doc )
+    sge_id = structure_get( "computation.sge_id", job_doc )
     sge_status = None
     is_done = False
     try:
@@ -44,21 +44,21 @@ def update_job_status( couch_db, job_doc, drmaa_session,
         is_done = True
 
     # only update the status if it has changed
-    if sge_status != structure_get( "job.sge_status", job_doc ):
+    if sge_status != structure_get( "computation.sge_status", job_doc ):
         
         # ok, update ht job status
         if is_done:
             update_couchdb_document( couch_db, 
                                      job_doc,
-                                     [ ("job.sge_status", sge_status),
-                                       ("job.status", "done" )] )
+                                     [ ("computation.sge_status", sge_status),
+                                       ("computation.status", "done" )] )
         else:
             update_couchdb_document( couch_db, 
                                      job_doc,
-                                     [ ("job.sge_status", sge_status) ] )
+                                     [ ("computation.sge_status", sge_status) ] )
 
         # print debug
-        print "updating job status: " + str(structure_get( "job.sge_id", job_doc )) + " " + structure_get( "job.job_id", job_doc )
+        print "updating job status: " + str(structure_get( "computation.sge_id", job_doc )) + " " + structure_get( "computation.computation_id", job_doc )
         sys.stdout.flush()
 
         
