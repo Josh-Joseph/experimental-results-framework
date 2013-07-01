@@ -54,6 +54,11 @@ def get_code_version( repo_filename = None, return_empty_keys=False ):
     untracked_files = []
     for name in ut:
         path = os.path.join( repo.working_dir, name ) 
+        
+        # explicitly ignore job-local files
+        # and last-changed-process.txt files
+        if path.find( "job-local" ) == -1 or path.find( "last-change-processed" ) == -1:
+            continue
         with open( path ) as f:
             untracked_files.append( { "path" : path,
                                       "contents" : f.read(),
