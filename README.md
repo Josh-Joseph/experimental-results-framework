@@ -31,8 +31,8 @@ Running jobs on an SGE cluster:
 
 On the cluster:
 * Start a couchdb (build-couchdb/build/bin/couchdb)
-* Start the jobs server (experimental-results-framework/task-manager/src/task_manager/couchdb-job-server.py)
-* Start the jobs tracker (experimental-results-framework/task-manager/src/task_manager/couchdb-job-tracker.py)
+* Start the jobs server (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-server.py)
+* Start the jobs tracker (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-tracker.py)
 
 Sun Grid Engine Quickstart:
 --------------------------
