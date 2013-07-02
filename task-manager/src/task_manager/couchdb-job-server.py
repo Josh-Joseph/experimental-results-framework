@@ -16,6 +16,8 @@ if __name__ == "__main__":
                          default="now",
                          help="One of either: \"now\" (default) for the current changes, or a number to use as the first seuence number for changes to lsiten on, or a filename which has a sequence number in it to use.")
     parser.add_argument( "--last-change-processed-file", default="last-change-processed.txt" )
+    parser.add_argument( "--verbose", default=False,
+                         action="store_const", const=True )
     args = parser.parse_args()
 
     # get couchdb connection and database target
@@ -30,7 +32,8 @@ if __name__ == "__main__":
     # get and register outselves as a cluster in the clusters database
     try:
         couch.create( args.couchdb_clusters_db )
-        print "created database %s in order to register this cluster" % args.couchdb_clusters_db
+        if args.verbose:
+            print "created database %s in order to register this cluster" % args.couchdb_clusters_db
     except couchdb.PreconditionFailed:
         pass
     cluster_db = couch[ args.couchdb_clusters_db ]
@@ -51,7 +54,8 @@ if __name__ == "__main__":
 
     # ok, open a continuous changes feed from the last change seen
     while True:
-        print "... {%s}" % last_seq_number_or_now
+        if args.verbose:
+            print "... {%s}" % last_seq_number_or_now
         for change in db.changes( feed="continuous", 
                                   include_docs="true", 
                                   since=last_seq_number_or_now ):
@@ -59,7 +63,8 @@ if __name__ == "__main__":
             if len(change) == 0 or not "seq" in change:
                 continue
 
-            print "got change: " + str(change["seq"])
+            if args.verbose:
+                print "got change: " + str(change["seq"])
             process_single_change( db, change, args.last_change_processed_file )
             last_seq_number_or_now = str(change["seq"])
 

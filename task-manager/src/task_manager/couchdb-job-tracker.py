@@ -24,13 +24,16 @@ if __name__ == "__main__":
                          help="The number of times to retyr an update on a databse conflict (default=10).")
     parser.add_argument( "--conflict-sleep-interval", default=0.1, type=float,
                          help="The number of second to wait before retrying a conflicting update (default=0.1)" )
+    parser.add_argument( "--verbose", default=False,
+                         action="store_const", const=True )
     args = parser.parse_args()
 
     # get couchdb connection and database target
     couch = couchdb.Server( args.couchdb_base_url )
     try:
         couch.create( args.couchdb_jobs_db )
-        print "created database %s in order to listen to changes" % args.couchdb_jobs_db
+        if args.verbose:
+            print "created database %s in order to listen to changes" % args.couchdb_jobs_db
     except couchdb.PreconditionFailed:
         pass
     db = couch[args.couchdb_jobs_db]
@@ -66,10 +69,11 @@ if __name__ == "__main__":
             update_job_status( db, doc["value"],
                                drmaa_session,
                                max_tries = args.conflict_max_retries,
-                               sleep_time = args.conflict_sleep_interval )
+                               sleep_time = args.conflict_sleep_interval,
+                               verbose=args.verbose)
 
         # print if none found
-        if not found:
+        if not found and args.verbose:
             print "did not find any jobs to update ..."
             # print "  view query: " + urllib.quote_plus( EXL.to_json(view_query))
             # print "  deconded: " + urllib.unquote_plus( urllib.quote_plus( EXL.to_json(view_query)) )
