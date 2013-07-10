@@ -1,0 +1,30 @@
+#!/bin/bash
+
+
+# start up a new screen session with the name of 'erf'
+screen -d -m -S erf
+
+# start up the couchdb window and start up couchdb
+screen -S erf -X screen -t couchdb
+screen -S erf -p couchdb -X stuff $'cd /home/velezj/sources/build-couchdb/build \r'
+screen -S erf -p couchdb -X stuff $'./bin/couchdb \r'
+
+# start up the jetty webserver
+screen -S erf -X screen -t jetty
+screen -S erf -p jetty -X stuff $'cd ~/sources/jetty/jetty-distribution-9.0.3.v20130506 \r'
+screen -S erf -p jetty -X stuff $'java -jar start.jar \r'
+
+# wait some time for these to start (especially the couchdb)
+sleep 10
+
+# start up the job server
+screen -S erf -X screen -t job-server
+screen -S erf -p job-server -X stuff $'cd ~/projects/gits/experimental-results-framework/task-manager/src/task_manager \r'
+screen -S erf -p job-server -X stuff $'python couchdb-job-server.py \r'
+
+# start up the job tracker
+screen -S erf -X screen -t job-tracker
+screen -S erf -p job-tracker -X stuff $'cd ~/projects/gits/experimental-results-framework/task-manager/src/task_manager \r'
+screen -S erf -p job-tracker -X stuff $'python couchdb-job-tracker.py \r'
+
+
