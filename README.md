@@ -52,24 +52,13 @@ Required Packages:
 * apt-get install libdrmaa-dev
 
 
-Getting couchdb running:
+Getting CouchDB running:
 ------------------------
 
-To get the UI running and test it:
+See [this](https://github.com/josh00/experimental-results-framework-couchdb) project for instructions on setting up CouchDB
 
-    sudo apt-get install help2man make gcc zlib1g-dev libssl-dev rake help2man texinfo flex dctrl-tools libsctp-dev libxslt1-dev libcap2-bin ed
 
-    sudo pip install couchdb gitpython
-    
-    git clone git://github.com/iriscouch/build-couchdb.git
-    
-    cd build-couchdb/
-    
-    rake
-    
-    setup build-couchdb/builb/etc/couchdb/local.ini as described in the README.md of https://github.com/josh00/experimental-results-framework-couchdb
-
-Start up (and leave running) couch db
+To start up CouchDB just run:
 
     build-couchdb/build/bin/couchdb
 
