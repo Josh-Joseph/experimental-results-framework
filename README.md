@@ -1,7 +1,48 @@
 experimental-results-framework
 ==============================
 
-This repo includes all of the results and process management code. It is responsible for coordinating all of the code. Includes all binds for the different programming languages.
+The experimental results framework is composed of two parts:
+1. (Distributed computation) A framework for starting and monitoring jobs across multiple clusters composed of multiple machines.
+2. (Results Storage) A distrubted syncing and storage framework for the results produced by a job.
+
+Distributed computation uses:
+* Starcluster to manage the machines of EC2 clusters
+* CouchDB to maintain the state of new/submitted/running/done jobs across clusters
+* Sun Grid Engine (SGE) to run and monitor jobs inside each cluster
+* job-sever.py to start new jobs on SGE and update the jobs state on CouchDB
+* job-tracker.py to monitor the jobs running/done on SGE and update the jobs state on CouchDB
+
+Results Storage uses:
+* CouchDB to sync results from clusters with local machines
+
+A special type of a job, called a "computation", is generally used throughout the framework which has two requirements:
+* It can be started as an commandline executable script (with commandline arguments, if desired),
+* Produces results that are pushed to the cluster's CouchDB
+
+A typical job flow looks like:
+* A document is pushed into CouchDB containing the script(s) executation details with a field "status" with value "new"
+* If the push was done on a local machine, the local CouchDB updates the CouchDB running on a cluster's master node with the new document
+* job-server.py, running on the cluster's master node, is notified about the new document, sends SGE the execution details, and updates the "status" field to "submitted"
+* SGE executes the script(s) on the cluster
+* job-tracker.py periodically queries SGE for the status of the jobs and updates "status" to "running" or "done"
+* The jobs pushed their results into the master's CouchDB 
+* The master's CouchDB's results are pushed to the local CouchDB
+
+Required Processes on each Machine:
+-----------------------------------
+
+On the cluster's master:
+* SGE
+* job-server.py
+* job-tracker.py
+* CouchDB
+
+On the cluster's nodes:
+* SGE
+
+Locally:
+* CouchDB
+
 
 Required Packages:
 -----------------
