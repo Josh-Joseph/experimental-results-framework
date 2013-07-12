@@ -34,8 +34,8 @@ Required Processes on each Machine:
 
 On the cluster's master:
 * SGE
-* job-server.py
-* job-tracker.py
+* job-server.py (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-server.py)
+* job-tracker.py (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-tracker.py)
 * CouchDB
 
 On the cluster's nodes:
@@ -48,35 +48,49 @@ Locally:
 Required Packages:
 -----------------
 
-* Jetty 9 from http://download.eclipse.org/jetty/stable-9/dist/
-* openjdk-7 (apt-get install openjdk-7-jdk openjdk-7-jre )
-* dojo 1.9.0:  http://download.dojotoolkit.org/release-1.9.0/dojo-release-1.9.0-src.tar.gz
 * pip install couchdb uptime drmaa
 * apt-get install libdrmaa-dev
 
-Webapps and Jetty:
------------------
 
-Jetty, by default, will take anything inside of the webapps folder and use it as a static content page.
-This folder is scanned by jetty as it runs for hot-plug contents.
-So we just create a folder inside of webapps and copy in all of the dojo sources as well as make a subfolder for our own UI sources and we are set.
-The webapp/<folder>will be at url localhost:8080/<folder>.
+Getting couchdb running:
+------------------------
 
-View results locally:
---------------------
+To get the UI running and test it:
 
+    sudo apt-get install help2man make gcc zlib1g-dev libssl-dev rake help2man texinfo flex dctrl-tools libsctp-dev libxslt1-dev libcap2-bin ed
+
+    sudo pip install couchdb gitpython
+    
+    git clone git://github.com/iriscouch/build-couchdb.git
+    
+    cd build-couchdb/
+    
+    rake
+    
+    setup build-couchdb/builb/etc/couchdb/local.ini as described in the README.md of https://github.com/josh00/experimental-results-framework-couchdb
+
+Start up (and leave running) couch db
+
+    build-couchdb/build/bin/couchdb
+
+
+Generating Fake Results:
+------------------------
+    
+Put fake results into the database
+
+    git clone git@github.com:josh00/experimental-results-framework.git
+
+    cd experimental-results-framework/fake-results-generator/
+
+    python generate_fake_results.py --num-trials 200
+    
+To view the fake results locally:
 * Start a local couchdb (build-couchdb/build/bin/couchdb)
 * View the results at http://localhost:5984/_utils/database.html?local_results
 
-Running jobs on an SGE cluster:
-----------------------
 
-On the cluster:
-* Start a couchdb (build-couchdb/build/bin/couchdb)
-* Start the jobs server (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-server.py)
-* Start the jobs tracker (python /experimental-results-framework/task-manager/src/task_manager/couchdb-job-tracker.py)
-
-Sun Grid Engine Quickstart:
+Getting Sun Grid Engine running:
 --------------------------
 
 * Follow the instructions at
