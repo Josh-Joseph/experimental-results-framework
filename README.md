@@ -21,7 +21,7 @@ A special type of a job, called a "computation", is generally used throughout th
 * Produces results that are pushed to the cluster's CouchDB
 
 A typical job flow looks like:
-* A document is pushed into CouchDB containing the script(s) executation details with a field "status" with value "new"
+* A document is pushed into CouchDB containing the script(s) executation details with a field "status" with value "request:new"
 * If the push was done on a local machine, the local CouchDB updates the CouchDB running on a cluster's master node with the new document
 * job-server.py, running on the cluster's master node, is notified about the new document, sends SGE the execution details, and updates the "status" field to "submitted"
 * SGE executes the script(s) on the cluster
