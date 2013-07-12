@@ -2,8 +2,9 @@ experimental-results-framework
 ==============================
 
 The experimental results framework is composed of two parts:
-1. (Distributed computation) A framework for starting and monitoring jobs across multiple clusters composed of multiple machines.
-2. (Results Storage) A distrubted syncing and storage framework for the results produced by a job.
+
+1.  (Distributed computation) A framework for starting and monitoring jobs across multiple clusters composed of multiple machines.
+2.  (Results Storage) A distrubted syncing and storage framework for the results produced by a job.
 
 Distributed computation uses:
 * Starcluster to manage the machines of EC2 clusters
