@@ -25,7 +25,7 @@ A typical job flow looks like:
 * If the push was done on a local machine, the local CouchDB updates the CouchDB running on a cluster's master node with the new document
 * job-server.py, running on the cluster's master node, is notified about the new document, sends SGE the execution details, and updates the "status" field to "submitted"
 * SGE executes the script(s) on the cluster
-* job-tracker.py periodically queries SGE for the status of the jobs and updates "status" to "running" or "done"
+* job-tracker.py periodically queries SGE for the status of the jobs and updates "sge_status" to the status (one of "queued_active", "invalid", etc..).  The "status" satays as "submitted" until the tracker sets it to "done" when the SGE finished the computation.
 * The jobs pushed their results into the master's CouchDB 
 * The master's CouchDB's results are pushed to the local CouchDB
 
