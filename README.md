@@ -73,7 +73,7 @@ Put fake results into the database
 
           git clone git@github.com:josh00/experimental-results-framework.git
 
-          cd experimental-results-framework/fake-results-generator/
+          cd experimental-results-framework/fake-results-generator/src/
 
           python generate_fake_results.py --num-trials 200
     
