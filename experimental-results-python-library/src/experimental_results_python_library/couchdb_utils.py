@@ -52,12 +52,18 @@ def update_couchdb_document( couch_db, doc, update_list,
        Arguments:
        couch_db -- a couchdb database which will be updated.
        doc -- a document from the given couchdb databse that needs to be updated
+              Alternatively, if this is a string it is treated as the id
+              of the document to update, and it will be fetched first.
        update_list -- a list of update tuples OR a dictionary.  The tuples
                       must be of the form ( structured-key, new-value )
                       where the structured kjey is a string.
                       IF a dictionary, the keys must be string structured keys 
                       and theyr mapped values are used as the new values for
                       the update.
+                      Also, if hte new value is a function object
+                      ( has a __call__ method ), then the function is called
+                      with the current value of the structured key and its
+                      return is used as the new value.
        max_retries -- the number of times to retry the update before giving
                       up. Defaults to 10. If less than 0, will keep trying 
                       to update forever.
@@ -85,11 +91,22 @@ def update_couchdb_document( couch_db, doc, update_list,
 
         # if this is not the first run, fetch the document
         # from hte couchdb databse
-        if not first_run:
+        if not first_run or isinstance( doc, basestring ):
             doc = couch_db.get( doc["_id"] )
         
         # apply changes to doc
         for skey, val in update_dict.iteritems():
+
+            # Check if we can call this value, and do so if we can to get
+            # the actual value, giving it the current/old value for the key.
+            # There is a debate on how exactly to do this check, see
+            # http://bugs.python.org/issue7006
+            # I went with what I considered to be the easier to understand
+            # and still good enough semantics for me. :-)
+            if hasattr( val, '__call__' ):
+                old_value = structure_get( skey, doc )
+                val = val( old_value )
+
             structure_put( skey, val, doc )
 
         # try to save the doc
