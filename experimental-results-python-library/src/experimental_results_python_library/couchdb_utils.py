@@ -85,13 +85,18 @@ def update_couchdb_document( couch_db, doc, update_list,
     num_tries = 0
     did_update = False
     first_run = True
+
+    # take care of being given just an id for the document
+    if isinstance( doc, basestring ):
+        first_run = False
+        doc = { "_id" : doc }
     
     # apply updates to document and try to save it
     while max_retries < 0 or num_tries < max_retries:
 
         # if this is not the first run, fetch the document
         # from hte couchdb databse
-        if not first_run or isinstance( doc, basestring ):
+        if not first_run:
             doc = couch_db.get( doc["_id"] )
         
         # apply changes to doc
