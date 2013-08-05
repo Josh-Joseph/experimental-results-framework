@@ -37,7 +37,7 @@ configure: uriparser-0.7.8/configure
 	@mkdir -p pod-build
 
 	# run configure on the library
-	uriparser-0.7.8/configure --prefix=$(BUILD_PREFIX) --disable-test
+	cd uriparser-0.7.8 && configure --prefix=$(BUILD_PREFIX) --disable-test
 
 	# make the library
 	cd uriparser-0.7.8 && make install
@@ -62,6 +62,9 @@ uriparser-fetch-and-make:
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
 	-if [ -d pod-build ]; then $(MAKE) -C pod-build clean; rm -rf pod-build; fi
+	rm -rf uriparser-0.7.8
+	rm -f uriparser-0.7.8.tar.bz2
+
 
 # other (custom) targets are passed through to the cmake-generated Makefile 
 %::
