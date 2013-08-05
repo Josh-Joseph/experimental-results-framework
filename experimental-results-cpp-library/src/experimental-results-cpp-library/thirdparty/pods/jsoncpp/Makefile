@@ -23,14 +23,14 @@ ifeq "$(BUILD_TYPE)" ""
 BUILD_TYPE="Release"
 endif
 
-all: pod-build/Makefile
+all: pod-build/Makefile jsoncpp-fetch-and-make
 	$(MAKE) -C pod-build all install
 
 pod-build/Makefile:
 	$(MAKE) configure
 
 .PHONY: configure
-configure: 
+configure:
 	@echo "\nBUILD_PREFIX: $(BUILD_PREFIX)\n\n"
 
 	# create the temporary build directory if needed

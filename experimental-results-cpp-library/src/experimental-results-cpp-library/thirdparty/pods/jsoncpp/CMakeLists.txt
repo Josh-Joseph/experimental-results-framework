@@ -13,6 +13,8 @@ add_library( jsoncpp SHARED
 pods_install_headers(
     dist/json/json.h
     dist/json/json-forward.h
+    DESTINATION
+    json
 )
 pods_install_libraries( jsoncpp )
 pods_install_pkg_config_file(jsoncpp
