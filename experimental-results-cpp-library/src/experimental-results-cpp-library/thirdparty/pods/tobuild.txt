@@ -5,3 +5,5 @@ jsoncpp
 curl
 
 uriparser
+cpp-netlib
+boost-1.54.0

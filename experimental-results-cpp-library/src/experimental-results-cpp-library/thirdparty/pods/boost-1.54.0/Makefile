@@ -30,7 +30,7 @@ pod-build/Makefile:
 	$(MAKE) configure
 
 .PHONY: configure
-configure: boost-fetch-and-make
+configure: boost-pkgconfig
 	@echo "\nBUILD_PREFIX: $(BUILD_PREFIX)\n\n"
 
 	# create the temporary build directory if needed
@@ -40,21 +40,30 @@ configure: boost-fetch-and-make
 	@cd pod-build && cmake -DCMAKE_INSTALL_PREFIX=$(BUILD_PREFIX) \
 		   -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
-boost-downloaded-success.touch: boost-fetch
-	@echo "\n Fetched and untar'd Boost 1.54.0 source \n"
+boost-downloaded-success.touch:
+	$(MAKE) boost-fetch
+	@echo "\n Fetched Boost 1.54.0 source \n"
+	touch boost-downloaded-success.touch
 
-boost-fetch-and-make: boost-downloaded-success.touch boost-make boost-pkgconfig
+boost-untar-success.touch: boost-downloaded-success.touch
+	$(MAKE) boost-untar
+	@echo "\n Untared Boost 1.54.0 source \n"
+	touch boost-untar-success.touch
+
 
 boost-fetch:
 	@echo "\n Fetching Boost 1.54.0 source \n"
 
 	wget -O boost-1.54.0.tar.gz "http://downloads.sourceforge.net/project/boost/boost/1.54.0/boost_1_54_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.54.0%2F"
 
+
+boost-untar:
+	@echo "Untaring Boost 1.54.0 source \n"
+
 	@tar xvzf boost-1.54.0.tar.gz
 
-	@touch boost-downloaded-success.touch
 
-boost-make: boost-downloaded-success.touch
+boost-make:
 	@echo "\n Making *ALL* Boost libraries (this  takes a while...)\n"
 
 	cd boost_1_54_0/ && ./bootstrap.sh --prefix=$(BUILD_PREFIX) 
@@ -63,7 +72,12 @@ boost-make: boost-downloaded-success.touch
 
 	cd boost_1_54_0/ && ./b2 install
 
-	@touch boost-made-success.touch
+boost-made-success.touch: boost-untar-success.touch
+
+	$(MAKE) boost-make
+
+	@echo "\n Compiled Boost 1.54.0 libraries (whew!) \n"
+	touch boost-made-success.touch
 
 boost-pkgconfig: boost-made-success.touch
 	@echo "\n Creating pkg-config file for Boost 1.54.0 \n"
@@ -75,7 +89,6 @@ clean:
 	#rm -f boost-downloaded-success.touch
 	#rm -f boost-1.54.0.tar.gz
 	rm -f boost-made-success.touch
-	rm -rf boost_1_54_0/
 
 
 # other (custom) targets are passed through to the cmake-generated Makefile 
