@@ -19,6 +19,6 @@ pods_install_headers(
 pods_install_libraries( jsoncpp )
 pods_install_pkg_config_file(jsoncpp
     CFLAGS
-    LIBS -lmath-core
+    LIBS -ljsoncpp
     REQUIRES
-    VERSION 0.5.0)
+    VERSION 0.6.0)

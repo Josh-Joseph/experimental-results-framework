@@ -23,14 +23,14 @@ ifeq "$(BUILD_TYPE)" ""
 BUILD_TYPE="Release"
 endif
 
-all: pod-build/Makefile jsoncpp-fetch-and-make
+all: pod-build/Makefile
 	$(MAKE) -C pod-build all install
 
 pod-build/Makefile:
 	$(MAKE) configure
 
 .PHONY: configure
-configure:
+configure: jsoncpp-fetch-and-make
 	@echo "\nBUILD_PREFIX: $(BUILD_PREFIX)\n\n"
 
 	# create the temporary build directory if needed
@@ -45,23 +45,25 @@ jsoncpp-fetch-and-make:
 	@echo "\n fetching JSONCpp (and SCons-Local) \n"
 
 	# grab jsoncpp source
-	wget -O jsoncpp-0.5.0.tar.gz "http://downloads.sourceforge.net/project/jsoncpp/jsoncpp/0.5.0/jsoncpp-src-0.5.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjsoncpp%2Ffiles%2Fjsoncpp%2F0.5.0%2F"
-
+	wget -O jsoncpp-0.6.0.tar.gz "http://downloads.sourceforge.net/project/jsoncpp/jsoncpp/0.6.0-rc2/jsoncpp-src-0.6.0-rc2.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjsoncpp%2Ffiles%2Fjsoncpp%2F0.6.0-rc2%2F"
 
 	# untar sources
-	tar xvzf jsoncpp-0.5.0.tar.gz
+	tar xvzf jsoncpp-0.6.0.tar.gz
 
 	# grab scons-local 1.2.0 source and untar it
-	cd jsoncpp-src-0.5.0 && wget -O scons-local-1.2.0.tar.gz "http://downloads.sourceforge.net/project/scons/scons-local/1.2.0/scons-local-1.2.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscons%2Ffiles%2Fscons-local%2F1.2.0%2F"
-	cd jsoncpp-src-0.5.0 && tar xvzf scons-local-1.2.0.tar.gz
+	cd jsoncpp-src-0.6.0-rc2 && wget -O scons-local-1.2.0.tar.gz "http://downloads.sourceforge.net/project/scons/scons-local/1.2.0/scons-local-1.2.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscons%2Ffiles%2Fscons-local%2F1.2.0%2F"
+	cd jsoncpp-src-0.6.0-rc2 && tar xvzf scons-local-1.2.0.tar.gz
 
 	# ok, make using scons
-	cd jsoncpp-src-0.5.0 && python scons.py platform=linux-gcc check
-	cd jsoncpp-src-0.5.0 && python amalganate.py
+	cd jsoncpp-src-0.6.0-rc2 && python scons.py platform=linux-gcc check
+	cd jsoncpp-src-0.6.0-rc2 && python amalgamate.py
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
 	-if [ -d pod-build ]; then $(MAKE) -C pod-build clean; rm -rf pod-build; fi
+	rm -f jsoncpp-0.6.0.tar.gz
+	rm -rf jsoncpp-src-0.6.0-rc2/
+
 
 # other (custom) targets are passed through to the cmake-generated Makefile 
 %::
