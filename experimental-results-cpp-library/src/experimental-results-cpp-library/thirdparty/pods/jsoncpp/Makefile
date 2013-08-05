@@ -30,7 +30,7 @@ pod-build/Makefile:
 	$(MAKE) configure
 
 .PHONY: configure
-configure: jsoncpp-fetch-and-make
+configure: jsoncpp-src-0.6.0-rc2/dist/jsoncpp.cpp
 	@echo "\nBUILD_PREFIX: $(BUILD_PREFIX)\n\n"
 
 	# create the temporary build directory if needed
@@ -40,6 +40,8 @@ configure: jsoncpp-fetch-and-make
 	@cd pod-build && cmake -DCMAKE_INSTALL_PREFIX=$(BUILD_PREFIX) \
 		   -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
+jsoncpp-src-0.6.0-rc2/dist/jsoncpp.cpp: jsoncpp-fetch-and-make
+	@echo "\nFetched JSONCpp source and made amalgam\n"
 
 jsoncpp-fetch-and-make:
 	@echo "\n fetching JSONCpp (and SCons-Local) \n"
@@ -56,13 +58,21 @@ jsoncpp-fetch-and-make:
 
 	# ok, make using scons
 	cd jsoncpp-src-0.6.0-rc2 && python scons.py platform=linux-gcc check
+
+	# grrrrr, fix stupid bug in amalgamate.poy and then use it
+	# really, why are paths *incorrectly* harcoded you say? testing perhaps?
+	sed 's/json\\json/json\/json/' jsoncpp-src-0.6.0-rc2/amalgamate.py >jsoncpp-src-0.6.0-rc2/amalgamate.py.2
+	mv jsoncpp-src-0.6.0-rc2/amalgamate.py.2 jsoncpp-src-0.6.0-rc2/amalgamate.py
 	cd jsoncpp-src-0.6.0-rc2 && python amalgamate.py
+
+	touch jsoncpp-src-0.6.0-rc2/dist/jsoncpp.cpp
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
 	-if [ -d pod-build ]; then $(MAKE) -C pod-build clean; rm -rf pod-build; fi
 	rm -f jsoncpp-0.6.0.tar.gz
 	rm -rf jsoncpp-src-0.6.0-rc2/
+	rm -f dist
 
 
 # other (custom) targets are passed through to the cmake-generated Makefile 

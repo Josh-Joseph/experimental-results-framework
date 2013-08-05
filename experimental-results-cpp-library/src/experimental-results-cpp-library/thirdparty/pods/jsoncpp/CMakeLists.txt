@@ -6,19 +6,21 @@ include(cmake/pods.cmake)
 
 # This assumes that the special fetch-amd-make Makefile target has
 #  already run, which provides the files used here.
+include_directories( BEFORE jsoncpp-src-0.6.0-rc2/dist )
+add_definitions(-DJSON_IS_AMALGAMATION)
 add_library( jsoncpp SHARED
-    dist/jsoncpp.cpp
+    jsoncpp-src-0.6.0-rc2/dist/jsoncpp.cpp
 )
 
 pods_install_headers(
-    dist/json/json.h
-    dist/json/json-forward.h
+    jsoncpp-src-0.6.0-rc2/dist/json/json.h
+    jsoncpp-src-0.6.0-rc2/dist/json/json-forwards.h
     DESTINATION
     json
 )
 pods_install_libraries( jsoncpp )
 pods_install_pkg_config_file(jsoncpp
-    CFLAGS
+    CFLAGS "-DJSON_IS_AMALGAMATION"
     LIBS -ljsoncpp
     REQUIRES
     VERSION 0.6.0)
