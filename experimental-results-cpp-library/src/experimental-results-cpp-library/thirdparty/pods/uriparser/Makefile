@@ -37,7 +37,7 @@ configure: uriparser-0.7.8/configure
 	@mkdir -p pod-build
 
 	# run configure on the library
-	cd uriparser-0.7.8 && configure --prefix=$(BUILD_PREFIX) --disable-test
+	cd uriparser-0.7.8 && ./configure --prefix=$(BUILD_PREFIX) --disable-test
 
 	# make the library
 	cd uriparser-0.7.8 && make install
