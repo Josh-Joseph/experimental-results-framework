@@ -82,6 +82,8 @@ boost-made-success.touch: boost-untar-success.touch
 boost-pkgconfig: boost-made-success.touch
 	@echo "\n Creating pkg-config file for Boost 1.54.0 \n"
 
+	mv *.pc $(BUILD_PREFIX)/lib/pkgconfig/
+
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
