@@ -1,5 +1,5 @@
 #!/bin/bash
 
 bn=$(basename $1)
-echo $1 $2/$3$bn
-rm $1 $2/$3$bn
+nn=$2/lib/pkgconfig/$3$bn
+rm $nn

@@ -82,6 +82,7 @@ boost-made-success.touch: boost-untar-success.touch
 boost-pkgconfig: boost-made-success.touch
 	@echo "\n Creating pkg-config file for Boost 1.54.0 \n"
 
+	mkdir -p $(BUILD_PREFIX)/lib/pkgconfig
 	find . -maxdepth 1 -iname '*.pc' -exec ./copy-pc.sh {} $(BUILD_PREFIX) boost-1.54.0 \;
 
 

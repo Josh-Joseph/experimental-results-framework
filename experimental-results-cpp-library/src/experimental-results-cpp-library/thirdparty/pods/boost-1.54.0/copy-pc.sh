@@ -1,5 +1,8 @@
 #!/bin/bash
 
 bn=$(basename $1)
-echo $1 $2/$3$bn
-cp $1 $2/$3$bn
+nn=$2/lib/pkgconfig/$3$bn
+echo $1 $nn
+echo "prefix=$2" > $nn
+cat $1 >> $nn
+
