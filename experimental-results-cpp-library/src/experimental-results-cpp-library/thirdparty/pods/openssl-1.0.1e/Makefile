@@ -83,6 +83,7 @@ install-source:
 
 pkgconfig-source:
 	@echo "\n Creating pkg-config files for $(POD_NAME) \n"
+	cp $(BUILD_PREFIX)/lib/pkgconfig/openssl.pc $(BUILD_PREFIX)/lib/pkgconfig/$(POD_NAME).pc
 	@touch pkgconfiged.touch
 
 

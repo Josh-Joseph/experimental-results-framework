@@ -1,9 +1,11 @@
 # list of subdirectories to build, one one each line.  Empty lines
 # and lines starting with '#' are ignored
 
+pods-utils
 jsoncpp
 curl
-
 uriparser
-cpp-netlib
 boost-1.54.0
+openssl-1.0.1e
+cpp-netlib
+

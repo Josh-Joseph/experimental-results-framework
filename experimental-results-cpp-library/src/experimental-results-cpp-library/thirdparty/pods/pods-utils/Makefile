@@ -26,9 +26,15 @@ endif
 all: pod-build/Makefile
 	$(MAKE) -C pod-build all install
 
-	sed s@LOCATION@$(BUILD_PREFIX)/bin/@ src/create-configure-pod,sh > $(BUILD_PREFIX)/bin/create-configure-pod.sh
+	mkdir -p $(BUILD_PREFIX)/bin
+	sed s@LOCATION@$(BUILD_PREFIX)/bin/@ src/create-configure-pod.sh > $(BUILD_PREFIX)/bin/create-configure-pod.sh
 	chmod a+x $(BUILD_PREFIX)/bin/create-configure-pod.sh
 	cp src/Makefile.template $(BUILD_PREFIX)/bin/Makefile.template
+
+	mkdir -p pod-build/
+	echo $(BUILD_PREFIX)/bin/create-configure-pod.sh >> pod-build/install_manifest.txt
+	echo $(BUILD_PREFIX)/bin/Makefile.template >> pod-build/install_manifest.txt
+
 
 pod-build/Makefile:
 	$(MAKE) configure
