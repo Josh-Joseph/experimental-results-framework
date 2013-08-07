@@ -26,6 +26,8 @@ endif
 all: pod-build/Makefile
 	$(MAKE) -C pod-build all install
 
+	$(MAKE) create-pkconfig
+
 pod-build/Makefile:
 	$(MAKE) configure
 
@@ -51,6 +53,18 @@ cpp-netlib-fetch-and-make:
 	@tar xzf cpp-netlib-0.10.1.tar.gz
 
 	touch cpp-netlib-0.10.1/CMakeLists.txt
+
+create-pkconfig:
+
+	sed s@PREFIX@$(BUILD_PREFIX)@ cppnetlib-uri-0.10.1.pc > $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-uri-0.10.1.pc
+	sed s@PREFIX@$(BUILD_PREFIX)@ cppnetlib-server-parsers-0.10.1.pc > $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-server-parsers-0.10.1.pc
+	sed s@PREFIX@$(BUILD_PREFIX)@ cppnetlib-client-connections-0.10.1.pc > $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-client-connections-0.10.1.pc
+
+	echo $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-uri-0.10.1.pc >> pod-build/install_manifest.txt
+	echo $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-server-parsers-0.10.1.pc >> pod-build/install_manifest.txt
+	echo $(BUILD_PREFIX)/lib/pkgconfig/cppnetlib-client-connections-0.10.1.pc >> pod-build/install_manifest.txt
+
+
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
